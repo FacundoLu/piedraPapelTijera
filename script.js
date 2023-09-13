@@ -1,56 +1,77 @@
-// Selección de un numero random del 0 al 8
-function getRandomNumber() {
-    const random = Math.random();
-    const multiplied = random * 9;
-    const rounded = Math.floor(multiplied);
+const resultText = document.querySelector('#resultText');
+const playerText = document.querySelector('#playerText');
+const computerText = document.querySelector('#computerText');
+const choiceBtns = document.querySelectorAll('.choiceBtn');
+const scorePlayerText = document.querySelector('.scorePlayer');
+const scoreComputerText = document.querySelector('.scoreComputer');
 
-    return rounded;
-}
-// Con el numero recibido de la función anterior se escoge una opción
+let player;
+let computer;
+let scorePlayer = 0;
+let scoreComputer = 0;
+
+choiceBtns.forEach(button => button.addEventListener('click', () => {
+    player = button.textContent; 
+    getComputerChoice()
+    playerText.textContent = `Player : ${player}`
+    computerText.textContent = `Computer : ${computer}`
+    resultText.textContent = `Resultado: ${checkWinner()}`
+    scorePlayerText.textContent = `Score: ${scorePlayer}`
+    scoreComputerText.textContent = `Score: ${scoreComputer}`
+}));
+
 function getComputerChoice() {
-    if (getRandomNumber() < 3) {
-        return "piedra";
-    } else if (getRandomNumber() < 6) {
-        return "papel";
-    } else {
-        return "tijera";
+    const randomNum = Math.floor(Math.random() * 3) + 1
+
+    switch(randomNum) {
+        case 1:
+            computer = "Piedra";
+        break;
+        case 2:
+            computer = "Papel";
+        break;
+        case 3:
+            computer = "Tijera";
+        break;
     }
 }
 
-// Función para jugar una ronda
-function playRound(playerSelection, computerSelection) {
-    if (playerSelection === "piedra" && computerSelection === "tijera") {
-        return "Ganaste! la Piedra rompe la Tijera";
-    } else if (playerSelection === "tijera" && computerSelection === "piedra") {
-        return "Perdiste! la Piedra rompe la Tijera";
-    } else if (playerSelection === "piedra" && computerSelection === "papel") {
-        return "Perdiste! el Papel le gana a la Piedra";
-    } else if (playerSelection === "tijera" && computerSelection === "papel") {
-        return "Ganaste! la Tijera corta el Papel";
-    } else if (playerSelection === "papel" && computerSelection === "tijera") {
-        return "Perdiste! la Tijera corta el Papel";
-    } else if (playerSelection === "papel" && computerSelection === "piedra") {
-        return "Ganaste! el Papel le gana a la Piedra";
-    } else if (playerSelection === computerSelection) {
-        playerSelection = prompt("Empate! elije otra vez entre Piedra Papel y Tijera").toLowerCase();
-        computerSelection = getComputerChoice(getRandomNumber());
-        return playRound(playerSelection, computerSelection);
-    } else {
-        playerSelection = prompt("Asegúrese de elegir una de las tres opciones disponibles: Piedra Papel y Tijera").toLowerCase();
-        return playRound(playerSelection, computerSelection);
-    }
-}
-
-// Se juegan 5 rondas
-function game() {
-  for (let i = 0; i < 5; i++) {
-    const computerSelection = getComputerChoice();
-    const playerSelection = prompt(
-      "Elije entre Piedra Papel y Tijera"
-    ).toLowerCase();
-
-    const currentRound = playRound(playerSelection, computerSelection);
-
-    console.log(currentRound);
+function checkWinner() {
+  if (player == computer) {
+    return "Empate!";
+  } else if (
+    (computer == "Piedra" && player == "Tijera") ||
+    (computer == "Papel" && player == "Piedra") ||
+    (computer == "Tijera" && player == "Papel")
+  ) {
+    scoreComputer++;
+    game()
+    return "Perdiste";
+  } else if (
+    (computer == "Piedra" && player == "Papel") ||
+    (computer == "Papel" && player == "Tijera") ||
+    (computer == "Tijera" && player == "Piedra")
+  ) {
+    scorePlayer++
+    game()
+    return "Ganaste!";
   }
+}
+
+const newGame = () => {
+    playerText.textContent = 'Player: ';
+    computerText.textContent = 'Computer: ';
+    resultText.textContent = 'Resultado: ';
+    scoreComputer = 0;
+    scorePlayer = 0;
+}
+
+function game() {
+    if (scoreComputer == 5) {
+        alert(`Perdiste! ${scoreComputer} a ${scorePlayer}`);
+        newGame();
+    } else if (scorePlayer == 5) {
+        alert(`Ganaste! ${scorePlayer} a ${scoreComputer}`);
+        newGame();
+    }
 }
